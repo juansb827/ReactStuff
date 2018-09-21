@@ -2,15 +2,18 @@ import React, { Component } from 'react';
 import classes from  './Person.css';
 
 
+import withClass from '../../../hoc/withClass';
+import Aux from '../../../hoc/_Aux';
+
 const person = (props) => {
     
     return (
-        <div className={classes.Person} >
+        <Aux  >
             <p onClick={props.click}>Person {props.name} component</p>
             <p>{props.age}</p>
             <input onChange={props.changed} value={props.name} />
-        </div>
+        </Aux>
     );
 }
 
-export default person;
+export default withClass( person, classes.Person);

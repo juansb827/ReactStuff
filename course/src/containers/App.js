@@ -1,11 +1,25 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import classes from './App.css';
-
-import Person from './Person/Person';
+import Persons from '../components/Persons/Persons';
+import Cockpit from '../components/Cockpit/Cockpit';
+import withClass from '../hoc/withClass';
+import Aux from '../hoc/_Aux';
 
 class App extends Component {
-  
+
+  constructor(props){
+    super(props);
+    console.log("[App.js] constructor", props);
+  }
+
+  componentWillMount(){
+    console.log("[App.js] componentWillMount");
+  }
+
+  componentDidMount(){
+    console.log("[App.js] componentDidMount");
+  }
+
   state = {
     persons: [
       { id: 1, name: 'Pedro', age: 23 },
@@ -59,52 +73,42 @@ class App extends Component {
 
   render() {
 
+    console.log("[App.js] render");
+
+    let persons = null;
     
 
-    let person = null;
-
     if (this.state.showPersons) {
-      person = (
+      persons = (
 
-        <div>
-          {
-            this.state.persons.map((person, index) => {
-              return (
-                <Person key={person.id}
-                  click={() => this.deletePersonHandler(index)}
-                  name={person.name}
-                  age={person.age}
-                  changed={(event) => this.nameChangedHandler(event, person.id)} />
-              )
-            })
-          }
+        <div >
+          <Persons  persons={this.state.persons} 
+          clicked={this.deletePersonHandler}
+          changed={this.nameChangedHandler}  />
         </div>
 
       );
-      
-      
+
+     
+
+
 
     }
 
-    const assignedClasses = [];
-    if (this.state.persons.length <= 2) {
-      assignedClasses.push(classes.red);
-    }
-
-    if (this.state.persons.length <= 1) {
-      assignedClasses.push(classes.bold);
-    }
+    
 
     return (
-      
-        <div className={classes.App}>
-          <p className={assignedClasses.join(' ')} >Title of the App</p>
-          <button onClick={this.togglePersonsHandler} >Switch</button>
-          {person}
-        </div>
-      
+
+      <Aux>
+        <Cockpit appTitle={this.props.title}
+          persons={this.state.persons} 
+          showPersons={this.state.showPersons} 
+          clicked={this.togglePersonsHandler} />
+        {persons}
+      </Aux>
+
     );
   }
 }
 
-export default App;
+export default withClass(App, classes.App);
