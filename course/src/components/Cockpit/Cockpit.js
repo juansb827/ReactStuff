@@ -23,6 +23,7 @@ const cockpit = (props) => {
             <h1>{props.appTitle}</h1>
             <p className={assignedClasses.join(' ')} >Title of the App</p>
             <button className={btnClass} onClick={props.clicked} >Switch</button>
+            <button onClick={props.login}>Log in</button>
         </React.Fragment>
     )
 }
