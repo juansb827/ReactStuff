@@ -9,6 +9,8 @@
     cursor: pointer;
 }
 
+
+
 .Post:hover,
 .Post:active {
     background-color: #C0DDF5;

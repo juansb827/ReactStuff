@@ -13,18 +13,30 @@ class FullPost extends Component {
             .then(console.log); 
     }
 
-    componentDidUpdate() {
-        if (this.props.id ) {
+    componentDidMount() {
+        this.updateData();
+
+    }
+
+    componentDidUpdate(){
+        this.updateData();
+    }
+
+    updateData(){
+        const id = this.props.match.params.id;
+        if (id ) {
             if( this.state.loadedPost == null ||
-                (this.state.loadedPost && this.state.loadedPost.id !== this.props.id)){
-                axios.get('/posts/' + this.props.id)
+                (this.state.loadedPost && this.state.loadedPost.id != id) ){
+                axios.get('/posts/' + id)
                 .then(response => {
+                    console.log("Fecthed Blog with id " + id);
                     this.setState({loadedPost: response.data});
                 });
             }           
         }
-
     }
+
+
     render() {
         let post = <p style={{ textAlign: "center" }}>Please select a Post!</p>;
         if (this.props.id) {
