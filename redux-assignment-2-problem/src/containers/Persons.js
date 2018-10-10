@@ -8,8 +8,8 @@ import * as actionTypes from '../store/actions';
 
 class Persons extends Component {
    
-    personAddedHandler = () => {      
-        this.props.onAddPerson('Max', Math.floor( Math.random() * 40 ));        
+    personAddedHandler = (name, age) => {      
+        this.props.onAddPerson(name, age);        
     }    
 
     render () {
