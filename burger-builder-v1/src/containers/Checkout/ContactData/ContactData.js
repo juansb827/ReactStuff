@@ -72,7 +72,8 @@ class ContactData extends Component {
                 },
                 value: '',
                 validation: {
-                    required: true
+                    required: true,
+                    isEmail: true
                 },
                 valid: false,
                 touched: false
@@ -107,6 +108,20 @@ class ContactData extends Component {
         if (rules.maxLength && !(value.length <= rules.maxLength)){
             return false;
         }
+
+        if (rules.isEmail) {
+            const pattern = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+            if(!pattern.test(value)){
+                return false;
+            } 
+        }
+
+        if (rules.isNumeric) {
+            const pattern = /^\d+$/;
+            if(!pattern.test(value)){
+                return false;
+            }
+        }
         return true;
 
     }
@@ -118,9 +133,10 @@ class ContactData extends Component {
         updatedElement.valid = this.checkValidity(updatedElement.value, updatedElement.validation);
         updatedElement.touched = true;
         updatedForm[inputId] = updatedElement;
-        console.log(updatedElement);
+        
         let formIsValid = true;
-        for(let formElement in updatedForm){
+        for(let key in updatedForm){
+            const formElement = updatedForm[key];
             if(formElement.validation && !formElement.valid){
                 formIsValid = false;
                 break;
@@ -190,7 +206,7 @@ class ContactData extends Component {
 const mapStateToProps = state => {
     return {
         ings: state.burgerBuilder.ingredients,
-        price: state.burgerBuilder.price,
+        totalPrice: state.burgerBuilder.totalPrice,
         loading: state.order.loading              
     }
 };

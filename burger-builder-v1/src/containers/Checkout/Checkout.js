@@ -7,7 +7,7 @@ import * as actions from '../../store/actions/index';
 
 class Checkout extends Component {
 
-    componentDidMount () {
+    componentWillMount () {
 
     }
 
@@ -19,11 +19,22 @@ class Checkout extends Component {
         this.props.history.replace('/checkout/contact-data');
     }
 
+    componentDidUpdate () {
+        console.log('Checkout update');
+        if ( this.props.purchased ) {
+            console.log('Checkout update RESETTING');
+            this.props.onResetIngredients(null);
+        }
+        
+    }
+
     render() {
         let summary = <Redirect to="/" />;
         if (this.props.ings) {
+            const purchaseRedirect = this.props.purchased ? <Redirect to="/" /> : null;
             summary = (
                 <div>
+                    {purchaseRedirect}
                     <CheckoutSummary
                         ingredients={this.props.ings}
                         checkoutCancelled={this.checkoutCancelledHandler}
@@ -45,14 +56,17 @@ class Checkout extends Component {
 
 const mapStateToProps = state => {
     return {
-        ings: state.burgerBuilder.ingredients
+        ings: state.burgerBuilder.ingredients,
+        purchased: state.order.purchased
     }
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-        onPurchaseInit = () => dispatch(actions.purchaseInit());         
+        onResetIngredients: () => { dispatch(actions.setIngredients(null)) }        
     }
-}
+};
 
-export default connect(mapStateToProps)(Checkout);
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(Checkout);
