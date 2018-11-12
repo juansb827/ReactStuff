@@ -26,7 +26,7 @@ const reducer = (state = initialState, action) => {
         case actionTypes.AUTH_LOGOUT:
              return updateObject(state, { token: null, userId: null  })
         case actionTypes.SET_AUTH_REDIRECT_PATH:
-             return updateObject(state, { authRedirect: action.path})
+             return updateObject(state, { authRedirect: action.path })
         default:
             return state;    
     }
