@@ -1,12 +1,29 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useReducer, useEffect, useCallback } from 'react';
 
 import IngredientForm from './IngredientForm';
 import Search from './Search';
 import IngredientList from './IngredientList';
 import  ErrorModal from '../UI/ErrorModal';
-const URL = 'https://react-hooks-sample-81c20.firebaseio.caom';
+import { DB_URL } from '../../const';
+
+const URL = `${DB_URL}`;
+
+const ingredientsReducer = (currentIngredients, action) => {
+  switch (action.type) {
+    case "SET":
+      return action.ingredients;
+    case "ADD":
+      return [...currentIngredients, action.ingredient];
+    case "DELETE":
+      return currentIngredients.filter(ing => ing.id !== action.id);      
+    default:
+      throw Error("should not get there");
+  }
+};
+
 function Ingredients() {
-  const [ingredients, setIngredients] = useState([]);
+  const [ingredients, dispatch] = useReducer(ingredientsReducer, [] );
+  //const [ingredients, setIngredients] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
   const ingredientAddedHandler = ingredient => {
@@ -19,10 +36,10 @@ function Ingredients() {
       })
       .then(response => response.json())
       .then(responseData => {
-        setIngredients(prevIngredients => [...prevIngredients, {
+        dispatch({ type: 'ADD', ingredient: {
           ...ingredient,
           id: responseData.name
-        }]);
+        }});
       })
       .catch(error => {
         setError(error.name);
@@ -39,14 +56,18 @@ function Ingredients() {
       })
       .then(response => response.json())
       .then(responseData => {
-        setIngredients(prevIngredients => prevIngredients.filter(ingredient => ingredient.id !== id));
+        dispatch({ type: 'DELETE', id });
+      })
+      .catch(error => {
+        console.log(error)
+        setError(error.name);
       })
       .finally(() => setIsLoading(false));
     
   }
 
   const filteredIngredientsHandler = useCallback(filteredIngredients => {
-    setIngredients(filteredIngredients);
+    dispatch({ type: 'SET', ingredients: filteredIngredients});
   }, []);
 
   const clearError = () => setError(null );

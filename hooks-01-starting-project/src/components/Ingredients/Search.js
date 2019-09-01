@@ -2,7 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 
 import Card from '../UI/Card';
 import './Search.css';
-const URL = 'https://react-hooks-sample-81c20.firebaseio.com/ingredients.json';
+import { DB_URL } from '../../const';
+
+const URL = `${DB_URL}/ingredients.json`;
 const Search = React.memo(props => {
   const [enteredFilter, setEnteredFilter] = useState('');
   const inputRef = useRef();
