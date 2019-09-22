@@ -5,6 +5,7 @@ import './Search.css';
 import { DB_URL } from '../../const';
 
 const URL = `${DB_URL}/ingredients.json`;
+console.log('RSA',URL);
 const Search = React.memo(props => {
   const [enteredFilter, setEnteredFilter] = useState('');
   const inputRef = useRef();

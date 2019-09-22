@@ -21,13 +21,29 @@ const ingredientsReducer = (currentIngredients, action) => {
   }
 };
 
+const httpReducer = (currHttpState, action) => {
+  switch(action.type) {
+    case 'SEND':
+      return { loading: true,  error: null }
+    case 'RESPONSE':
+      return { loading: false, error: null }
+    case 'ERROR':
+      return { loading: false, error: action.error.name }
+    case 'CLEAR':
+      return { loading: false, error: null }
+    default:
+      throw Error("should not get there");
+  }
+}
+
 function Ingredients() {
-  const [ingredients, dispatch] = useReducer(ingredientsReducer, [] );
+  const [ingredients, dispatch] = useReducer(ingredientsReducer, [] );  
   //const [ingredients, setIngredients] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState();
-  const ingredientAddedHandler = ingredient => {
-    setIsLoading(true);
+  const [httpState, dispatchHttp] = useReducer(httpReducer, { loading: false, error: null });
+  //const [isLoading, setIsLoading] = useState(false);
+  //  const [error, setError] = useState();
+  const ingredientAddedHandler = useCallback(ingredient => {
+    dispatchHttp({ type: 'SEND'});
     fetch(URL + '/ingredients.json',
       {
         method: 'POST',
@@ -35,21 +51,22 @@ function Ingredients() {
         headers: { 'Content-Type': 'application/json' }
       })
       .then(response => response.json())
-      .then(responseData => {
+      .then(responseData => {      
         dispatch({ type: 'ADD', ingredient: {
           ...ingredient,
           id: responseData.name
         }});
+        dispatchHttp({ type: 'RESPONSE'})
       })
       .catch(error => {
-        setError(error.name);
-      })
-      .finally(() => setIsLoading(false));
+        dispatchHttp({ type: 'ERROR', error });
+        
+      })     
 
-  }
+  }, [])
 
-  const onIngredientRemovedHandler = id => {
-    setIsLoading(true);
+  const onIngredientRemovedHandler = useCallback(id => {
+    //dispatchHttp({ type: 'SEND'});
     fetch(URL + `/ingredients/${id}.json?`,
       {
         method: 'DELETE'
@@ -57,25 +74,24 @@ function Ingredients() {
       .then(response => response.json())
       .then(responseData => {
         dispatch({ type: 'DELETE', id });
+        //dispatchHttp({ type: 'RESPONSE'})
       })
       .catch(error => {
         console.log(error)
-        setError(error.name);
-      })
-      .finally(() => setIsLoading(false));
-    
-  }
+        //dispatchHttp({ type: 'ERROR', error });
+      })      
+  }, [])
 
   const filteredIngredientsHandler = useCallback(filteredIngredients => {
     dispatch({ type: 'SET', ingredients: filteredIngredients});
   }, []);
 
-  const clearError = () => setError(null );
+  const clearError = () => dispatchHttp({ type: 'CLEAR'});
 
   return (
     <div className="App">
-      {error && <ErrorModal onClose={clearError}>{error}</ErrorModal>}
-      <IngredientForm onIngredientAdded={ingredientAddedHandler} isLoading={isLoading}/>
+      {httpState.error && <ErrorModal onClose={clearError}>{httpState.error}</ErrorModal>}
+      <IngredientForm onIngredientAdded={ingredientAddedHandler} isLoading={httpState.loading}/>
 
       <section>
         <Search onIngredientsLoaded={filteredIngredientsHandler} />
